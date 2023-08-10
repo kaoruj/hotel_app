@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-
-/// Flutter code sample for [AppBar].
-
-final List<int> _items = List<int>.generate(51, (int index) => index);
-
+import 'package:hotel_app/global/variable.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Room extends StatefulWidget {
   const Room({super.key});
@@ -15,6 +13,44 @@ class Room extends StatefulWidget {
 class _RoomState extends State<Room> {
   bool shadowColor = false;
   double? scrolledUnderElevation;
+  // final List<int> _items = List<int>.generate(51, (int index) => index);
+  List<dynamic> _rooms = [];
+
+  void initState() {
+    obtenrDatos();
+    super.initState();
+  }
+
+  Future<List<dynamic>> getRooms() async {
+    var response;
+
+    try {
+      // final url = Uri.parse( + "");
+      var url = Uri.http(url_global, '/rooms', {});
+      // response = await http.get(Uri.http(url.authority, url.path));
+      response = await http.get(url);
+      if (response.statusCode == 200) {
+        // print(response.body);
+        return jsonDecode(response.body);
+      } else {
+        // Si ha habido algún error, lanzamos una excepción con un mensaje de error
+        print("error loadData Room");
+        throw Exception('Error al obtener los room: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print("Error al realizar la solicitud: $e");
+      return [];
+    }
+  }
+
+  Future<void> obtenrDatos() async {
+    List<dynamic> data = await getRooms();
+    _rooms = data
+        .map((item) => {'numero': item['numero'], 'ocupado': item['ocupado']})
+        .toList();
+    // print(_rooms.toString());
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +65,7 @@ class _RoomState extends State<Room> {
         shadowColor: shadowColor ? Theme.of(context).colorScheme.shadow : null,
       ),
       body: GridView.builder(
-        itemCount: _items.length,
+        itemCount: _rooms.length,
         padding: const EdgeInsets.all(8.0),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 5,
@@ -52,53 +88,13 @@ class _RoomState extends State<Room> {
             // tileColor: _items[index].isOdd ? oddItemColor : evenItemColor,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.0),
-              color: _items[index].isOdd ? oddItemColor : evenItemColor,
+              color:
+                  _rooms[index]['ocupado'] == 0 ? oddItemColor : evenItemColor,
             ),
-            child: Text('Item $index'),
+            child: Text(_rooms[index]['numero']),
           );
         },
       ),
-      // bottomNavigationBar: BottomAppBar(
-      //   child: Padding(
-      //     padding: const EdgeInsets.all(8),
-      //     child: OverflowBar(
-      //       overflowAlignment: OverflowBarAlignment.center,
-      //       alignment: MainAxisAlignment.center,
-      //       overflowSpacing: 5.0,
-      //       children: <Widget>[
-      //         ElevatedButton.icon(
-      //           onPressed: () {
-      //             setState(() {
-      //               shadowColor = !shadowColor;
-      //             });
-      //           },
-      //           icon: Icon(
-      //             shadowColor ? Icons.visibility_off : Icons.visibility,
-      //           ),
-      //           label: const Text('shadow color'),
-      //         ),
-      //         const SizedBox(width: 5),
-      //         ElevatedButton(
-      //           onPressed: () {
-      //             if (scrolledUnderElevation == null) {
-      //               setState(() {
-      //                 // Default elevation is 3.0, increment by 1.0.
-      //                 scrolledUnderElevation = 4.0;
-      //               });
-      //             } else {
-      //               setState(() {
-      //                 scrolledUnderElevation = scrolledUnderElevation! + 1.0;
-      //               });
-      //             }
-      //           },
-      //           child: Text(
-      //             'scrolledUnderElevation: ${scrolledUnderElevation ?? 'default'}',
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
     );
   }
 }
