@@ -35,16 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
+  static final List<Widget> _widgetOptions = <Widget>[
+    const Text(
       'Index 0: Menu',
       style: optionStyle,
     ),
-    Room(),
-    Text(
-      'Index 2: Honkan',
-      style: optionStyle,
-    ),
+    Room(honkan: 0, key: UniqueKey()),
+    Room(honkan: 1, key: UniqueKey()),
   ];
 
   void _onItemTapped(int index) {
@@ -59,7 +56,6 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Hotel Uchiyamada'),
-        
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -84,6 +80,5 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: _onItemTapped,
       ),
     );
-
   }
 }
