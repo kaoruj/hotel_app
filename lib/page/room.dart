@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hotel_app/global/variable.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:hotel_app/page/check_in.dart';
 
 class Room extends StatefulWidget {
   int honkan;
@@ -89,6 +90,12 @@ class _RoomState extends State<Room> {
               ),
               onPressed: () {
                 //completar
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CheckIn(habitacion: _rooms[index]['numero']),
+                  ),
+                );
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
